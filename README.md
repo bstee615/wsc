@@ -1,6 +1,29 @@
 # cps301-appdev2
 Database application development project for CpS 301 Into to Database Management.
 
+<h1>To install:</h1>
+<h3>Requirements</h3>
+<ul>
+  <li>Python version >= 3</li>
+  <li>A MySQL server already running the CpS 301 example WSOApp database. To setup this database:</li>
+  <ul>
+    <li>Start MySQL Workbench.</li>
+    <li>Create a new schema named <code>wsoapp</code>.</li>
+    <li>Populate <code>wsoapp</code> by importing the data from <code>wsoapp.sql</code> (included with this repository).</li>
+    <li>Modify <code>login.conf</code> to work with your MySQL username, password, and database name.</li>
+  </ul>
+</ul>
+<h3>Instructions</h3>
+<ul>
+  <li>Download or clone the repository.</li>
+  <li>Unzip the repository if needed.</li>
+  <li><code>cd</code> into the folder you downloaded.</li>
+  <li>Activate the virtual environment by running this command:<code>source venv/bin/activate</code></li>
+  <li>Note: on Windows the command will just be this:<code>venv/bin/activate.bat</code></li>
+  <li>Run this command:<code>python wsc.py</code></li>
+  <li>Connect to the webpage in your browser at address <code>localhost:8080</code>.</li>
+</ul>
+
 <h1>Project details:</h1>
 <h3>Service Order Generator</h3>
 <p>
