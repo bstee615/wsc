@@ -3,7 +3,7 @@ Database application development project for CpS 301 Into to Database Management
 
 Project requirements:
 <h1>Service Order Generator (50 points)</h1>
-<pre>
+<p>
 Create a GUI or web application that allows the user to create a new service based on an existing service (the “template”). You may use any technology or language that you wish.
 
 Note: See these tips for setting up a Visual Studio project that uses Entity Framework. See also a sample C# GUI application in \bju\University\Courses\CPS301\Class\examples\GUIDBApp, along with a video walkthrough on youtube (https://youtu.be/Q4L7vF39gs8).
@@ -31,4 +31,4 @@ Insert records into the ServiceEvent table for the new service based on the even
 Tip: The creation of all of the ServiceEvent records for the new service can be done with a single, carefully constructed INSERT statement. Review the notes to find the form of the INSERT that can generate records using a SELECT.
 
 Bonus: In the final step of the application, allow the user to select songs to be assigned to the congregational song events in the new service. Create a view named SongUsageView that displays all of the colums in the Song table, plus one named LastUsedDate. The LastUsedDate column should contain the date of the most recent service that used that song. (Exclude choral songs, but be sure to include songs which have never been used). Using this view, display 20 of the least recently used songs, ordered by LastUsedDate, and then song title. Allow the user to select songs from this list, and assign them to the congregational song events.
-</pre>
+</p>
