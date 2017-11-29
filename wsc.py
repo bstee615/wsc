@@ -5,7 +5,16 @@ import bottle
 from datetime import datetime
 from mysql.connector import connect
 
-con = connect(user='root', password='Tamaleb0b', database='wsoapp')
+def get_login_info():
+    file = open('login.conf')
+    info = []
+    for line in file:
+        info.append(line.split('=')[1].strip())
+
+    return tuple(info)
+
+username, password, database = get_login_info()
+con = connect(user=username, password=password, database=database)
 cursor = con.cursor()
 
 def create_record(data):
@@ -73,4 +82,3 @@ def hello():
 # Launch the BottlePy dev server
 if __name__ == "__main__":
     bottle.run(host='localhost', debug=True)
-
