@@ -2,24 +2,29 @@
 Database application development project for CpS 301 Into to Database Management.
 
 Project requirements:
-<h1>Service Order Generator (50 points)</h1>
+<h1>Service Order Generator</h1>
 <p>
 Create a GUI or web application that allows the user to create a new service based on an existing service (the “template”). You may use any technology or language that you wish.
 
 Note: See these tips for setting up a Visual Studio project that uses Entity Framework. See also a sample C# GUI application in \bju\University\Courses\CPS301\Class\examples\GUIDBApp, along with a video walkthrough on youtube (https://youtu.be/Q4L7vF39gs8).
+</p>
 
-Prompt the user to enter the following info (the user must enter items with an *; the other items may be left blank):
+<p>Prompt the user to enter the following info (the user must enter items with an *; the other items may be left blank):</p>
 
-*Date/time for new service – clearly indicate the format the user must follow when entering the date/time. Fill in the current date/time as the default value.
+<ul>
+  
+<li>*Date/time for new service – clearly indicate the format the user must follow when entering the date/time. Fill in the current date/time as the default value.</li>
 
-*Date/time for template service – Allow the user to select from a list of previous services. The list should be sorted by date/time.
+<li>*Date/time for template service – Allow the user to select from a list of previous services. The list should be sorted by date/time.</li>
 
-Title
+<li>Title</li>
 
-Theme
+<li>Theme</li>
 
-Songleader – Allow the user to select from a list of names of previous service songleaders.
+<li>Songleader – Allow the user to select from a list of names of previous service songleaders.</li>
+<ul>
 
+<p>
 When the user enters this information and clicks a “Create” button, validate it as follows:
 
 There must be no existing service at the datetime specified for the new service.
