@@ -16,14 +16,66 @@ def get_login_info():
 username, password, database = get_login_info()
 con = connect(user=username, password=password, database=database)
 cursor = con.cursor()
-
 template_service_id = None
 
+
+def serviceExists(datetime: str):
+    cursor.execute("""
+    SELECT count(Service_ID)
+    FROM service
+    WHERE Svc_DateTime = {0}
+    """.format(datetime))
+    return cursor.fetchall()
+
+"""
+***insert a record into Service table***
+Dictionary data contains info for the service record
+-Keys are columns in service table
+-Values are info to be inserted into respective columns
+-Assumes that fields user left blank are NULL
+"""
 
 def create_record(data):
     print('Creating record in the database with these records...')
     for key in data:
         print('{} : {},'.format(key, data[key]))
+    
+    if not serviceExists(data['DateTime']):
+        print('Service date & time already exists.')
+        return False
+    else:
+        fields = [
+        'ServiceID',
+        'Svc_DateTime',
+        'Theme',
+        'Title',
+        'Notes', 
+        'Organist_Conf', 
+        'Songleader_Conf', 
+        'Pianist_Conf', 
+        'Organist_ID', 
+        'Songleader_ID', 
+        'Pianist_ID'
+        ]
+        for i in dataFields:
+            if i in data:
+                #pass
+            else:
+                data[i] = 'NULL'
+    #insert record into service table
+        insert_record = ("""
+                        INSERT INTO Service
+                        (Service_ID, Svc_DateTime, Theme, Title, Notes, Organist_Conf, Songleader_Conf, Pianist_Conf, Organist_ID, Songleader_ID, Pianist_ID)
+                        Values(
+                        %(Service_ID)s, %(Svc_DateTime)s, %(Theme)s, %(Title)s, %(Notes)s, 
+                        %(Organist_Conf)s, %(Songleader_Conf)s, %(Pianist_Conf)s, 
+                        %(Organist_ID)s, %(Songleader_ID)s, %(Pianist_ID)s
+                        )
+                        """)
+        cursor.execute(insert_record, data)
+        con.commit()
+
+    return True
 
 
 @bottle.route('/')
@@ -87,9 +139,9 @@ def hello():
           Template service date/time:
           {0}
           Title:
-          <input type='text' placeholder='Title' name='title'>
+          <input type='text' placeholder='Title' name='Title'>
           Theme:
-          <input type='text' placeholder='Theme' name='theme'>
+          <input type='text' placeholder='Theme' name='Theme'>
           Songleader:
           {1}
           <input type='submit' value='Submit'>
