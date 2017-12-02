@@ -1,6 +1,8 @@
 # To use this app:
 #   pip install bottle
 
+import enum
+
 import bottle
 from datetime import datetime
 from mysql.connector import connect
@@ -25,10 +27,10 @@ datetime_format = '%m/%d/%y %I:%M %p'
 
 def serviceExists(dt: str):
     cursor.execute("""
-    SELECT count(Service_ID)
+    SELECT Service_ID
     FROM service
-    WHERE Svc_DateTime = {0}
-    """.format(datetime.strptime(dt, datetime_format).strftime("'%y-%m-%d %H:%M:%S'")))
+    WHERE Svc_DateTime = '{0}'
+    """.format(dt))
     return cursor.fetchall()
 
 
@@ -46,39 +48,55 @@ def create_record(data):
     for key in data:
         print('{} : {},'.format(key, data[key]))
 
-    if not serviceExists(data['template-datetime']):
+    if serviceExists(data['Svc_DateTime']):
         print('Service date & time already exists.')
         return False
     else:
-        fields = [
-            'ServiceID',
-            'Svc_DateTime',
-            'Theme',
-            'Title',
-            'Notes',
-            'Organist_Conf',
-            'Songleader_Conf',
-            'Pianist_Conf',
-            'Organist_ID',
-            'Songleader_ID',
-            'Pianist_ID'
-        ]
-        for i in fields:
-            if i in data:
-                pass
-            else:
-                data[i] = 'NULL'
-    # insert record into service table
-        insert_record = ("""
+        fields = {
+            'Svc_DateTime': data['Svc_DateTime'],
+            'Theme': data['Theme'],
+            'Title': data['Title'],
+            'Songleader_ID': template_songleader_id,
+            'Pianist_Conf': False,
+            'Organist_Conf': False,
+            'Songleader_Conf': True
+        }
+        # Replace all empty strings with NULL
+        for key in fields:
+            if isinstance(fields[key], str) and not fields[key]:
+                fields[key] = None
+
+        # Insert service record
+        insert_record = """
                         INSERT INTO Service
-                        (Service_ID, Svc_DateTime, Theme, Title, Notes, Organist_Conf, Songleader_Conf, Pianist_Conf, Organist_ID, Songleader_ID, Pianist_ID)
+                        (Svc_DateTime, Theme, Title,
+                            Songleader_ID, Pianist_Conf,
+                            Organist_Conf, Songleader_Conf)
                         Values(
-                        %(Service_ID)s, %(Svc_DateTime)s, %(Theme)s, %(Title)s, %(Notes)s, 
-                        %(Organist_Conf)s, %(Songleader_Conf)s, %(Pianist_Conf)s, 
-                        %(Organist_ID)s, %(Songleader_ID)s, %(Pianist_ID)s
+                        %(Svc_DateTime)s, %(Theme)s, %(Title)s,
+                            %(Songleader_ID)s, %(Pianist_Conf)s,
+                            %(Organist_Conf)s, %(Songleader_Conf)s
                         )
-                        """)
-        cursor.execute(insert_record, data)
+                        """
+        cursor.execute(insert_record, fields)
+
+        # Insert all serviceevents from this service
+        fields = {
+            'Service_ID': cursor.lastrowid,
+            'Confirmed': 'N',
+            'Old_Service_ID': template_service_id
+        }
+        insert_record = """
+            INSERT INTO ServiceEvent(
+                Service_ID, Seq_Num, EventType_ID, Confirmed)
+            SELECT %(Service_ID)s, ServiceEvent.Seq_Num,
+                ServiceEvent.EventType_ID, %(Confirmed)s
+            FROM Service JOIN ServiceEvent
+            ON Service.Service_ID = ServiceEvent.Service_ID
+            WHERE Service.Service_ID = %(Old_Service_ID)s
+        """
+        cursor.execute(insert_record, fields)
+
         con.commit()
 
     return True
@@ -106,7 +124,9 @@ def generate_html():
     FROM Service JOIN Person ON Service.Songleader_ID = Person.Person_ID
     """)
     songleaders_with_id = cursor.fetchall()
-    songleaders = [pair[1] for pair in songleaders_with_id]
+    songleaders = []
+    [songleaders.append(pair[1])
+     for pair in songleaders_with_id if pair[1] not in songleaders]
     songleaders_string = '\n'.join(
         ['<option>{}</option>'.format(name)
             for name in songleaders])
@@ -115,6 +135,7 @@ def generate_html():
         {0}
         </select>""".format(songleaders_string)
 
+    create_record_errmsg = ""
     # Submit a record to the db
     if bottle.request.params:
         # Set current serviceID
@@ -143,17 +164,26 @@ def generate_html():
         except KeyError:
             template_songleader_id = None
 
-        create_record(bottle.request.params)
+        create_record_success = create_record(bottle.request.params)
+        if create_record_success:
+            create_record_errmsg = "<p style='color:green'>" \
+                "Successfully created record.</p>"
+        else:
+            create_record_errmsg = "<p style='color:red'>" \
+                "Service already exists at that date/time.</p>"
 
-    css = r"""
-    <style display="none">
-        * { display: block; margin: 4px; }
-        style, title { display:none }
-    </style>"""
+    css = """
+        <style display="none">
+            * { display: block; margin: 4px; }
+            style, title { display:none }
+        </style>
+    """
+
     return """<html><head>
         <title>Worship Service Creator</title>
-        {2}
+        {3}
         <h3>Worship Service Creator</h3>
+        {2}
         </head>
         <body>
         <form>
@@ -170,7 +200,7 @@ def generate_html():
           <input type='submit' value='Submit'>
         </form>
         </body></html>""".format(
-        template_service_datetime, songleader, css)
+        template_service_datetime, songleader, create_record_errmsg, css)
 
 
 # Launch the BottlePy dev server
