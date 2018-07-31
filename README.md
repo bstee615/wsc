@@ -7,11 +7,10 @@ A web application that allows the user to create a schedule for a church service
 
 *   Python version >= 3
 *   A MySQL server already running the CpS 301 example WSOApp database. To setup this database:
-
-*   Start MySQL Workbench.
-*   Create a new schema named `wsoapp`.
-*   Populate `wsoapp` by importing the data from `wsoapp.sql` (included with this repository).
-*   Modify `login.conf` to work with your MySQL username, password, and database name.
+**   Start MySQL Workbench.
+**   Create a new schema named `wsoapp`.
+**   Populate `wsoapp` by importing the data from `wsoapp.sql` (included with this repository).
+**   Modify `login.conf` to work with your MySQL username, password, and database name.
 
 ### Instructions
 
