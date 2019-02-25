@@ -1,5 +1,5 @@
-# cps301-appdev2
-A web application that allows the user to create a schedule for a church service. This was part of a database application development project for CpS 301 Into to Database Management.
+# wsc: Worship Service Creator
+A web application that allows the user to create a schedule for a church service. This was part of a database application development project for CpS 301 Into to Database Management. This is a tool for storing and creating document formats, for e.g. a church worship service.
 
 ## To install
 
